@@ -1,0 +1,83 @@
+install django-crispy-forms
+install crispy-bootstrap5
+django-admin startproject projectname
+cd projectname > python manage.py startapp appname
+
+add the main.apps.MainConfig file to installed apps in settings.py in main project folder
+
+add to installed apps "crispy_forms" and "crispy_bootstrap5"
+
+add 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRIPSY_TEMPLATE_PACK = "bootstrap5"
+LOGIN_REDIRECT_URL  = "/home"
+LOGOUT_REDIRECT_URL = "/login"
+
+create urls.py file in the app that you create:
+ include:
+    from django.urls import path
+    from .views import views
+
+        urlpatters = [
+            path('', views.name_of_route, name = "name_of_route")
+        ]
+
+on the views:
+ we need to create a home route
+ def home(request):
+    return render(request, 'main/home.html') # render the template here its at main/home.html
+
+we also need to create a login:
+    here we used the django.contrib.auth.urls in the urls.py in main app folder
+    create a login.html template
+        in the login.html 
+            {% load crispy_forms_tags%}
+        in the block content add form tags 
+            {% block content %}
+                <form>
+                    {% csrf_token %}{{ form|crispy }}
+                    <p>Add any other extra infor here</p>
+                    <button>Login</button>
+                </form>
+            {% endblock %}
+
+
+we also need to have a sign up page that makes use of the model already in django
+    we also need to create a template for the sign_up page uses the login style
+    create a new file call it forms that should have the forms
+        from django.contrib.auth.models import User
+        FROM django.contrib.auth.forms import UserCreationForm
+        from django import forms
+
+        class RegisterForm(UserCreationForm):
+            email = forms.EmailField(required = True)
+
+            classMeta:
+                model = User
+                fields = ["username","email","password1","password2"]
+
+
+we need to have this form in the views:
+ from .forms import RegisterForm
+ from django.shortcuts import render, redirect
+ from django.contrib.auth import login, logout, authenticate
+
+
+    def sign_up(request):
+        if request.method == "POST":
+            #getting 
+            form = RegisterForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                login(request, user)
+                return redirect("/home)
+        else:
+            form = RegisterForm()
+
+        return render(request, 'registration/sign_up.html', {"form": form})
+
+we need to run migration to create the databases  before using login and sign up
+ otherwise we gate the error auth_user model doesn't exist
+    >> python manage.py migrate
+
+
