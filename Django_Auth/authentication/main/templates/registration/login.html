@@ -3,9 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}{{ form|crispy }}
-    <p>Don't have an account? Create one <a href="/sign-up">here</a></p>
-    <button type="submit" class="btn btn-success">Login</button>
-</form>
+<div class="container mt-3">
+    <form method="POST">
+        {% csrf_token %}{{ form|crispy }}
+        <p>Don't have an account? Create one <a href="/sign-up">here</a></p>
+        <button type="submit" class="btn btn-success">Login</button>
+    </form>
+</div>
 {% endblock %}
