@@ -81,3 +81,93 @@ we need to run migration to create the databases  before using login and sign up
     >> python manage.py migrate
 
 
+we can add decorators to prevent access to certain urls unless user is logged in:
+    from django.contrib.auth.decorators import login_required
+ add this as a decorator to the url you want to have login required
+    @login_required(login_url = "/login")
+
+creating models for custom catabases to handle our customized requirements
+    from django.contrib.auth.models import User
+ We need to associate a post with a user that's why we need that User model by Django
+    from django.db import models
+
+ creating model classes
+  The model class inherits from the models.Model;
+    class modelName(models.Model):
+        //create an auther and associate that with the User model
+        //make it ondelete=CASCADE to make sure that when author is deleted >> posts go as well
+        auther = models.Foreign(User, ondelete=models.CASCADE)
+
+adding to DateField types in models. Auto assigned the current date time 
+    auto_now_add=True
+    auto_now=True
+
+When applying changes to the models
+    >> python manage.py makemigrations
+    >> python manage.py migrate
+
+we need to create a from that allows us to accept the data input for the post content
+When we create a model that stores data input by the user
+
+// create a model
+    from django.db import models
+    from django.contrib.auth.models import User
+
+    class Post(models.Model):
+        author = models.ForeignKey(User, on_delete=models.CASCADE)
+        title = models.CharField(max_length=200)
+        description = models.TextFieled()
+
+// in the forms.py lets create a form that allows user to input this data
+
+    from .models import Post
+
+    class PostForm(forms.ModelForm):
+        class Meta:
+            model = Post
+            fields = ["title","description"]
+
+Now if we want to delete a specific id for a post like to delete
+ we need to have name and value in the html
+    if request.method == "POST":
+        post_id = request.POST.get('post-id')
+        #here we get the name given to the html to have the value we assigned
+        #check post
+        post = Post.objects.get(id=post_id)
+        if post and post.author == request.user:
+            post.delete
+
+now we need to venture further into authentication by creating groups with special permissions
+ First we create a superuser
+    >> python manage.py createsuperuser
+    >> python manage.py shell
+ We would like to automate the process of assigning groups and permissions
+    >> From django.contrib.auth.models import Group, Permission, User
+    >> from django.contrib.contenttypes.models import ContentType
+ Creating groups is done like this: instead of logging in to admin to do it
+    >> groupname, created = Group.objects.get_or_create(name="groupname")
+ For example creating moderators group
+    >> moderators, created = Group.objects.get_or_create(name="moderators")
+ Now we create permissions for that group. And we must define to which Model the group have the permissions
+    >> from main.models import Post
+ We need to get the ContentType of our Post model to be able to add permissions.
+    >> ct = ContentType.objects.get_for_model(model=Post)
+    >> perm= Permission.objects.filter(content_type = ct)
+ now what we need to do is to addd our permissions to the group we created
+    >> groupname.permissions.add(*perm) // this add everything
+    >> moderators.permissions.add(*perm)
+ To add specific permission 
+    >> moderators.permissions.add(perm["name of permission"])
+ The next challenge is now adding a specific user to the group:
+    // First let's get the user
+    user = User.objects.filter(username="Scorprog")
+    moderators.user_set.add(user.first())
+
+on the routes:
+    from django.contrib.auth.decorators import permission_required
+    @permission_required("appname.action_modelname", login_url='/login', raise_exception=True)
+        in the route we can check for the permission using:
+            if post and (post.author == request.user or request.user.has_perm("main.delete_post"))
+no we can go to the templates and inlude that permission requirements
+    
+    {% if user = post.author or perms.main.delete_post %}
