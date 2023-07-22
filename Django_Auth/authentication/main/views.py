@@ -1,19 +1,31 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User, Group
 from .forms import RegistrationForm, PostForm
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from .models import Post
 
 # Create your views here.
 @login_required(login_url= "/login")
+@permission_required("main.view_post", login_url='/login', raise_exception=True)
 def home(request):
     posts_made = Post.objects.all()
 
     if request.method == "POST":
         post_id = request.POST.get('post-id')
-        post = Post.objects.get(id=post_id)
-        if post and post.author == request.user:
-            post.delete()
+        user_id = request.POST.get('user-id')
+
+        if post_id:
+            post = Post.objects.get(id=post_id)
+            if post and (post.author == request.user or request.user.has_perm("main.delete_post")):
+                post.delete()
+        elif user_id:
+            user = User.objects.get(id=user_id)
+            if user and request.user.is_staff:
+                group = Group.objects.get(name='default')
+                group.user_set.remove(user)
+                group = Group.objects.get(name='mod')
+                group.user_set.remove(user)
     return render(request, 'main/home.html', {"posts":posts_made})
 
 
@@ -34,6 +46,7 @@ def sign_up(request):
     return render(request, 'registration/sign_up.html', {"form": form})
 
 @login_required(login_url="/login")
+@permission_required("main.add_post", login_url="/login", raise_exception=True)
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
@@ -48,3 +61,4 @@ def create_post(request):
         form = PostForm()
 
     return render(request, 'main/create_post.html',  {"form":form})
+
