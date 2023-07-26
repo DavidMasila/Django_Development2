@@ -1,0 +1,36 @@
+{% extends 'employee_register/base.html' %}
+{% block title %} Employee List {% endblock title %}
+
+{% block content %}
+<table class="table table-borderless">
+    <thead class="border-bottom fw-bold">
+        <tr>
+            <td>FULL NAME</td>
+            <td>MOBILE</td>
+            <td>POSITION</td>
+            <td>
+                <a href="{% url 'employee_insert'%}"><button type="button" class="btn btn-outline-success"><i
+                            class="fa fa-plus fa-lg"></i> Add new</button>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employee in employee_list %}
+        <tr>
+            <td>{{ employee.fullname }}</td>
+            <td>{{ employee.mobile }}</td>
+            <td>{{ employee.position }}</td>
+            <td>{{ employee.emp_code }}</td>
+            <td class="d-flex flex-row justify-content-between">
+                <a href="{% url  'employee_edit'  employee.id  %}" class="btn text-secondary px-0">
+                    <i class="fa fa-edit fa-lg"></i>
+                </a>
+                <a href="{% url 'employee_delete' employee.id %}" class="btn text-secondary px-0">
+                    <i class="fa-regular fa-trash-can fa-lg ml-2" style="color: #ff0000;"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
