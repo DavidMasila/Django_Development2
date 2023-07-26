@@ -5,7 +5,7 @@ employee details in a form, update that on a databse, read the list of employees
 The following screenshots shows the front end of the application.
 There are buttons to add, edit and delete and a list view to check all the added employees
 
-## List View with buttons to add, delte and update
+## List View with buttons to add, delete and update
 ![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_Crud/CRUD1.png)
 ## Create Model Form
 ![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_Crud/CRUD2.png)
