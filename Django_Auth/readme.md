@@ -15,4 +15,4 @@ In this Application there are three categories of users
 ## Post Form
 ![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_Auth/Auth3.png)
 ## Sign Up view
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_Auth/Auth3.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_Auth/Auth4.png)
