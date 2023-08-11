@@ -1,0 +1,65 @@
+{% extends 'accounts/base.html'%}
+
+{% block title %} Customers {% endblock title%}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row mb-3">
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Customer: </h5>
+                <hr>
+                <a href="" class="btn btn-outline-info btn-sm btn-block">Update Customer</a>
+                <a href="" class="btn btn-outline-danger btn-sm btn-block">Delete Customer</a>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Contact Information</h5>
+                <hr>
+                <p>Email: </p>
+                <p>Phone: </p>
+            </div>
+        </div>
+
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Total Orders</h5>
+                <hr>
+                <h1 class="text-center p-3"></h1>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card card-body">
+                <form method="GET">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md">
+            <div class="card card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Date Ordered</th>
+                        <th>Status</th>
+                        <th>Update</th>
+                        <th>Remove</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content%}

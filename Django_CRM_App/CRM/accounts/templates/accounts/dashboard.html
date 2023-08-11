@@ -1,0 +1,54 @@
+{% extends 'accounts/base.html'%}
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+{% include 'accounts/status.html'%}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-md-5">
+            <h5 class="text-center">CUSTOMERS:</h5>
+            <hr>
+            <div class="card card-body">
+                <a href="" class="btn btn-primary btn-sm btn-block">Create Customer</a>
+                <table class="table table-sm">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Orders</th>
+                    </tr>
+                    {% for customer in customers%}
+                    <tr>
+                        <td>{{ customer.last_name }}</td>
+                        <td>{{ customer.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h5 class="text-center">LAST 5 ORDERS</h5>
+            <hr>
+            <div class="card card-body">
+                <a href="" class="btn btn-primary btn-sm btn-block">Create Order</a>
+                <table class="table table-sm">
+                    <tr>
+                        <th>Product</th>
+                        <th>Date Ordered</th>
+                        <th>Status</th>
+                        <th>Update</th>
+                        <th>Remove</th>
+                    </tr>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.product_name }}</td>
+                        <td>{{ order.date_created }}</td>
+                        <td>{{ order.status }}</td>
+                        <td><a href=""><div class="btn btn-sm btn-outline-success">Update</div></a></td>
+                        <td><a href=""><div class="btn btn-sm btn-outline-danger">Remove</div></a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
