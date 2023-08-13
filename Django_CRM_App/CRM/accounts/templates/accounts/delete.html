@@ -1,0 +1,25 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card card-body">
+                <p class="card-header text-center">Are you sure you want to delete this order by {{ order.customer.first_name }}</p>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="dflex justify-content-between text-center">
+                        <a href="{% url 'home' %}" class="btn btn-sm btn-warning">Cancel</a>
+                        <input type="submit" class="btn btn-sm btn-danger" name="Confirm" value="Confirm">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
