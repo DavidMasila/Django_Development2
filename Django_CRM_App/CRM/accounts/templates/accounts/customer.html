@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html'%}
 
 {% block title %} Customers {% endblock title%}
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid mt-3">
     <div class="row mb-3">
@@ -39,7 +39,10 @@
         <div class="col">
             <div class="card card-body">
                 <form method="GET">
-                    <button class="btn btn-primary" type="submit">Search</button>
+                    <div class="d-flex justify-content-evenly">
+                        {{ filter.form | crispy }}
+                        <button class="btn btn-sm btn-primary" type="submit">Search</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -52,6 +55,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Category</th>
+                        <th>Note</th>
                         <th>Date Ordered</th>
                         <th>Status</th>
                         <th>Update</th>
@@ -61,6 +65,7 @@
                     <tr>
                         <td>{{ order.product }}</td>
                         <td>{{ order.product.category}}</td>
+                        <td>{{ order.note}}</td>
                         <td>{{ order.date_created }}</td>
                         <td>{{ order.status }}</td>
                         <td><a href="{% url 'update_order' order.id %}">
