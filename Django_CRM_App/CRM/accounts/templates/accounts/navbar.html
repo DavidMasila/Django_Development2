@@ -17,16 +17,21 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">login</a>
+                    <a class="nav-link" href="{% url 'login' %}">login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Signup</a>
+                    <a class="nav-link" href="{% url 'register' %}">Signup</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <span class="nav-link">Hello {{ user|capfirst }}</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Logout</a>
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
-
+                {% endif %}
             </ul>
         </div>
     </div>

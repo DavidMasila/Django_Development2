@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.forms import inlineformset_factory
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import OrderForm, CreateUserForm
 from .filters import OrderFilter
@@ -8,23 +11,43 @@ from .filters import OrderFilter
 
 
 def loginpage(request):
-    return render(request, 'accounts/login.html')
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            #authenticate the user
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, f'Welcome {username.capitalize()}')
+                return redirect('/')
+            else:
+                messages.warning(request, 'Username or Password is incorrect')
+                return render(request, 'accounts/login.html')
+        return render(request, 'accounts/login.html')
 
 
 def registerpage(request):
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid:
-            form.save()
-            return redirect('home')
+    if request.user.is_authenticated:
+        return redirect('/')
     else:
-        form = CreateUserForm()
-        context = {
-            'form': form,
-        }
-        return render(request, 'accounts/register.html', context)
+        if request.method == 'POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save()
+                user = form.cleaned_data.get('username')
+                messages.success(request, f'Account created successfully for {user}')
+                return redirect('login')
+        else:
+            form = CreateUserForm()
+            context = {
+                'form': form,
+            }
+            return render(request, 'accounts/register.html', context)
 
-
+@login_required(login_url='/login')
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -45,7 +68,7 @@ def home(request):
 
     return render(request, 'accounts/dashboard.html', context)
 
-
+@login_required(login_url='/login')
 def products(request):
     products = Product.objects.all()
     context = {
@@ -54,7 +77,7 @@ def products(request):
     }
     return render(request, 'accounts/products.html', context)
 
-
+@login_required(login_url='/login')
 def customers(request, id):
     customer = Customer.objects.get(id=id)
     orders = customer.order_set.all()
@@ -69,7 +92,7 @@ def customers(request, id):
     }
     return render(request, 'accounts/customer.html', context)
 
-
+@login_required(login_url='/login')
 def createOrder(request, id):
     # inline formsets allow to enter multiple fields without first submitting
     # Takes in the Parent model, child model and the fields to take from child model
@@ -90,12 +113,12 @@ def createOrder(request, id):
         # the queryset=Order.Objects.none() eliminates the previous order from from list
         formset = OrderFormSet(
             queryset=Order.objects.none(), instance=customer)
-        context = {
-            'formset': formset
-        }
-        return render(request, 'accounts/order_form.html', context)
+    context = {
+        'formset': formset
+    }
+    return render(request, 'accounts/order_form.html', context)
 
-
+@login_required(login_url='/login')
 def updateOrder(request, id):
     order = Order.objects.get(id=id)
     if request.method == 'POST':
@@ -110,7 +133,7 @@ def updateOrder(request, id):
         }
         return render(request, 'accounts/update_order_form.html', context)
 
-
+@login_required(login_url='/login')
 def deleteOrder(request, id):
     order = Order.objects.get(id=id)
     if request.method == 'POST':
@@ -119,6 +142,7 @@ def deleteOrder(request, id):
     context = {'order': order}
     return render(request, 'accounts/delete.html', context)
 
-
+@login_required(login_url='/login')
 def logoutpage(request):
-    return render(request, 'accounts/login.html')
+    logout(request, )
+    return redirect('login')
