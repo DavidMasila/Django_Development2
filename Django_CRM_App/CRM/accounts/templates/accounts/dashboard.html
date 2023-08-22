@@ -36,7 +36,9 @@
                         <th>Date Ordered</th>
                         <th>Status</th>
                         <th>Update</th>
+                        {% if admin in user.groups.all %}
                         <th>Remove</th>
+                        {% endif %}
                     </tr>
                     {% for order in orders %}
                     <tr>
@@ -44,7 +46,11 @@
                         <td>{{ order.date_created }}</td>
                         <td>{{ order.status }}</td>
                         <td><a href="{% url 'update_order' order.id %}"><div class="btn btn-sm btn-outline-info">Update</div></a></td>
+                        {% for groups in user.groups.all %}
+                        {% if groups.name == 'admin' %}
                         <td><a href="{% url 'delete_order' order.id %}"><div class="btn btn-sm btn-outline-danger">Remove</div></a></td>
+                        {% endif %}
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </table>

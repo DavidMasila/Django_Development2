@@ -59,7 +59,11 @@
                         <th>Date Ordered</th>
                         <th>Status</th>
                         <th>Update</th>
+                        {% for group in user.groups.all %}
+                        {% if group.name == 'admin' %}
                         <th>Remove</th>
+                        {% endif %}
+                        {% endfor %}
                     </tr>
                     {% for order in orders %}
                     <tr>
@@ -71,9 +75,13 @@
                         <td><a href="{% url 'update_order' order.id %}">
                                 <div class="btn btn-sm btn-outline-info">Update</div>
                             </a></td>
+                        {% for group in user.groups.all %}
+                        {% if group.name == 'admin' %}
                         <td><a href="{% url 'delete_order' order.id %}">
                                 <div class="btn btn-sm btn-outline-danger">Remove</div>
                             </a></td>
+                        {% endif %}
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </table>

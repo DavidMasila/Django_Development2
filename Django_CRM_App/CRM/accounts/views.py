@@ -3,51 +3,63 @@ from django.http import HttpResponse
 from django.forms import inlineformset_factory
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group, User
+from django.contrib.auth.decorators import login_required, permission_required
 from .models import *
 from .forms import OrderForm, CreateUserForm
 from .filters import OrderFilter
+from .decorators import unauthenticated_user, allowed_access, admin_only
+from django import template
 # Create your views here.
 
+register = template.Library()
 
+@unauthenticated_user
 def loginpage(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-    else:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            #authenticate the user
-            user = authenticate(request, username=username, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, f'Welcome {username.capitalize()}')
-                return redirect('/')
-            else:
-                messages.warning(request, 'Username or Password is incorrect')
-                return render(request, 'accounts/login.html')
-        return render(request, 'accounts/login.html')
-
-
-def registerpage(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-    else:
-        if request.method == 'POST':
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, f'Account created successfully for {user}')
-                return redirect('login')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        # authenticate the user
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            messages.success(request, f'Welcome {username.capitalize()}')
+            return redirect('/')
         else:
-            form = CreateUserForm()
-            context = {
-                'form': form,
-            }
-            return render(request, 'accounts/register.html', context)
+            messages.warning(request, 'Username or Password is incorrect')
+            return render(request, 'accounts/login.html')
+    return render(request, 'accounts/login.html')
+
+
+@unauthenticated_user
+def registerpage(request):
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            
+            # Check if a user with the same username or email exists
+            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+                messages.error(request, 'A user with the same username or email already exists.')
+                return redirect('register')
+            else:
+                user = form.save()
+                group = Group.objects.get(name="customer")
+                user.groups.add(group)
+                messages.success(request, f'Account created successfully for {username}')
+                return redirect('login')
+    else:
+        form = CreateUserForm()
+    
+    context = {
+        'form': form,
+    }
+    return render(request, 'accounts/register.html', context)
+
 
 @login_required(login_url='/login')
+@admin_only
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -68,7 +80,9 @@ def home(request):
 
     return render(request, 'accounts/dashboard.html', context)
 
+
 @login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin','employee'])
 def products(request):
     products = Product.objects.all()
     context = {
@@ -77,7 +91,9 @@ def products(request):
     }
     return render(request, 'accounts/products.html', context)
 
+
 @login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin','employee'])
 def customers(request, id):
     customer = Customer.objects.get(id=id)
     orders = customer.order_set.all()
@@ -92,7 +108,9 @@ def customers(request, id):
     }
     return render(request, 'accounts/customer.html', context)
 
+
 @login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin','employee'])
 def createOrder(request, id):
     # inline formsets allow to enter multiple fields without first submitting
     # Takes in the Parent model, child model and the fields to take from child model
@@ -118,7 +136,9 @@ def createOrder(request, id):
     }
     return render(request, 'accounts/order_form.html', context)
 
+
 @login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin','employee'])
 def updateOrder(request, id):
     order = Order.objects.get(id=id)
     if request.method == 'POST':
@@ -133,7 +153,9 @@ def updateOrder(request, id):
         }
         return render(request, 'accounts/update_order_form.html', context)
 
+
 @login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin'])
 def deleteOrder(request, id):
     order = Order.objects.get(id=id)
     if request.method == 'POST':
@@ -141,6 +163,11 @@ def deleteOrder(request, id):
         return redirect('/')
     context = {'order': order}
     return render(request, 'accounts/delete.html', context)
+
+
+def user(request):
+    return render(request, 'accounts/user.html')
+
 
 @login_required(login_url='/login')
 def logoutpage(request):
