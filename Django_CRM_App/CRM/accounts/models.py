@@ -7,6 +7,7 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     email = models.EmailField(max_length=100, null=True)
+    profile_pic = models.ImageField(null=True, blank=True, default="Blank.png")
     phone = models.CharField(null=True, unique=True, max_length=50)
     date_created = models.DateTimeField(auto_now_add=True)
 

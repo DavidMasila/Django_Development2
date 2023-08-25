@@ -25,12 +25,19 @@ body {
 }
 
 #profile-logo {
-    min-height: 30px;
+    height: 30px;
+    width: 30px;
     max-height: 30px;
     max-width: 30px;
-    width: 30px;
-    border-radius: 50px;
-    background-color: white;
+    border-radius: 50%;
+}
+
+.profile-display {
+    max-height: 300px;
+    max-width: 75%;
+    text-align: center;
+    margin-left: 12%;
+    border-radius: 49%;
 }
 .user_card {
     width: 500px;
@@ -45,7 +52,7 @@ body {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 5px;
+    border-radius: 10px;
 
 }
 
