@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Customer(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     email = models.EmailField(max_length=100, null=True)
@@ -10,6 +12,19 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+    
+    # def __str__(self):
+    # full_name = ""
+    # if self.first_name:
+    #     full_name += self.first_name
+    # if self.last_name:
+    #     if full_name:
+    #         full_name += " "
+    #     full_name += self.last_name
+    # if not full_name:
+    #     full_name = f"Customer {self.id}"
+    # return full_name
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, null=True)

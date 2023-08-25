@@ -27,7 +27,7 @@ def loginpage(request):
             return redirect('/')
         else:
             messages.warning(request, 'Username or Password is incorrect')
-            return render(request, 'accounts/login.html')
+            return redirect('login')
     return render(request, 'accounts/login.html')
 
 
@@ -38,7 +38,8 @@ def registerpage(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
-            
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
             # Check if a user with the same username or email exists
             if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
                 messages.error(request, 'A user with the same username or email already exists.')
@@ -47,6 +48,10 @@ def registerpage(request):
                 user = form.save()
                 group = Group.objects.get(name="customer")
                 user.groups.add(group)
+                Customer.objects.create(user=user,
+                                        first_name = first_name,
+                                        last_name = last_name,
+                                        email = email)
                 messages.success(request, f'Account created successfully for {username}')
                 return redirect('login')
     else:
@@ -164,9 +169,26 @@ def deleteOrder(request, id):
     context = {'order': order}
     return render(request, 'accounts/delete.html', context)
 
-
+@login_required(login_url='login')
+@allowed_access(allowed_groups=['customer'])
 def user(request):
-    return render(request, 'accounts/user.html')
+    orders = request.user.customer.order_set.all()
+    total_orders = orders.count()
+    orders_delivered = orders.filter(status='Delivered').count()
+    orders_pending = orders.filter(status='Pending').count()
+
+    context = {
+        'orders':orders,
+        'total_orders':total_orders,
+        'orders_delivered': orders_delivered,
+        'orders_pending': orders_pending
+    }
+    return render(request, 'accounts/user.html', context)
+
+@login_required(login_url='login')
+@allowed_access(allowed_groups=['customer','admin'])
+def user_settings(request):
+    return render(request, 'accounts/profile_settings.html')
 
 
 @login_required(login_url='/login')

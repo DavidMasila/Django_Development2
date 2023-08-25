@@ -32,6 +32,8 @@
                 <li class="nav-item">
                     <span class="nav-link">Hello {{ user|capfirst }}</span>
                 </li>
+                <a class="navbar-brand" href="{% url 'settings' %}"><img src="{% static 'images/logo.png' %}"
+                        alt="scorprog logo" id="profile-logo"></a>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
