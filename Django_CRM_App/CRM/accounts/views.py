@@ -38,25 +38,26 @@ def registerpage(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
             # Check if a user with the same username or email exists
             if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
                 messages.error(request, 'A user with the same username or email already exists.')
                 return redirect('register')
             else:
                 user = form.save()
-                group = Group.objects.get(name="customer")
-                user.groups.add(group)
-                Customer.objects.create(user=user,
-                                        first_name = first_name,
-                                        last_name = last_name,
-                                        email = email)
+                # Extract first name and last name from the form
+                first_name = form.cleaned_data['first_name']
+                last_name = form.cleaned_data['last_name']
+                email = form.cleaned_data['email']
+                # Update the user's first name, last name, email
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.save()
                 messages.success(request, f'Account created successfully for {username}')
                 return redirect('login')
     else:
         form = CreateUserForm()
-    
+        
     context = {
         'form': form,
     }
@@ -205,5 +206,5 @@ def user_settings(request):
 
 @login_required(login_url='/login')
 def logoutpage(request):
-    logout(request, )
+    logout(request)
     return redirect('login')

@@ -11,20 +11,20 @@ class Customer(models.Model):
     phone = models.CharField(null=True, unique=True, max_length=50)
     date_created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.first_name + " " + self.last_name
-    
     # def __str__(self):
-    # full_name = ""
-    # if self.first_name:
-    #     full_name += self.first_name
-    # if self.last_name:
-    #     if full_name:
-    #         full_name += " "
-    #     full_name += self.last_name
-    # if not full_name:
-    #     full_name = f"Customer {self.id}"
-    # return full_name
+    #     return self.first_name + " " + self.last_name
+    
+    def __str__(self):
+        full_name = ""
+        if self.first_name:
+            full_name += self.first_name
+        if self.last_name:
+            if full_name:
+                full_name += " "
+            full_name += self.last_name
+        if not full_name:
+            full_name = f"Customer {self.id}"
+        return full_name
 
 
 class Tag(models.Model):
