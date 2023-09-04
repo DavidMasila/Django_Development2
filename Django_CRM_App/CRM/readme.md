@@ -11,22 +11,22 @@ The app provides functionality in the following capacities
 ## Attached here are the screenshots of the application
 
 ### Admin View on home page
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/1.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/1.png)
 
 ### Customer view on home page
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/7.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/7.png)
 
 ### Detailed view of Customer order with filter functionality
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/2.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/2.png)
 
 ### Profile update/settings page
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/3.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/3.png)
 
 ### Login View
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/4.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/4.png)
 
 ### Register view
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/5.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/5.png)
 
 ### Password Reset View
-![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/6.png)
+![Screenshot](https://github.com/DavidMasila/Django_Development2/blob/master/Django_CRM_App/CRM/6.png)
