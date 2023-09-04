@@ -6,6 +6,7 @@ The app provides functionality in the following capacities
 - Reset password through email link
 - Restrict certain pages to only specific users i.e. permissions
 - Restricted functionalities such as adding orders and modifying orders i.e. permissions still
+- Full CRUD functionality
 
 ### Attached here are the screenshots of the application
 
