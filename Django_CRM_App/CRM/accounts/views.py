@@ -40,8 +40,8 @@ def registerpage(request):
             email = form.cleaned_data['email']
             # Check if a user with the same username or email exists
             if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                messages.error(request, 'A user with the same username or email already exists.')
-                return redirect('register')
+                messages.info(request, 'A user with the same username or email already exists.')
+                return redirect('/register')
             else:
                 user = form.save()
                 # Extract first name and last name from the form
