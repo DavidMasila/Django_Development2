@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import *
-from .forms import OrderForm, CreateUserForm, CustomerForm
+from .forms import OrderForm, CreateUserForm, CustomerForm, ProductForm
 from .filters import OrderFilter
 from .decorators import unauthenticated_user, allowed_access, admin_only
 from django import template
 # Create your views here.
 
 register = template.Library()
+
 
 @unauthenticated_user
 def loginpage(request):
@@ -40,7 +41,8 @@ def registerpage(request):
             email = form.cleaned_data['email']
             # Check if a user with the same username or email exists
             if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                messages.info(request, 'A user with the same username or email already exists.')
+                messages.info(
+                    request, 'A user with the same username or email already exists.')
                 return redirect('/register')
             else:
                 user = form.save()
@@ -53,11 +55,12 @@ def registerpage(request):
                 user.last_name = last_name
                 user.email = email
                 user.save()
-                messages.success(request, f'Account created successfully for {username}')
+                messages.success(
+                    request, f'Account created successfully for {username}')
                 return redirect('login')
     else:
         form = CreateUserForm()
-        
+
     context = {
         'form': form,
     }
@@ -88,7 +91,7 @@ def home(request):
 
 
 @login_required(login_url='/login')
-@allowed_access(allowed_groups=['admin','employee'])
+@allowed_access(allowed_groups=['admin', 'employee'])
 def products(request):
     products = Product.objects.all()
     context = {
@@ -99,7 +102,62 @@ def products(request):
 
 
 @login_required(login_url='/login')
-@allowed_access(allowed_groups=['admin','employee'])
+@allowed_access(allowed_groups=['admin', 'employee'])
+def add_products(request):
+    ProductFormSet = modelformset_factory(
+        Product, fields=['product_name', 'price', 'category'], extra=3)
+    if request.method == 'POST':
+        form = ProductFormSet(request.POST, queryset=Product.objects.none())
+        if form.is_valid():
+            form.save()
+            return redirect('/products')
+    else:
+        form = ProductFormSet(queryset=Product.objects.none())
+
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/add_products.html', context)
+
+
+@login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin', 'employee'])
+def add_customer(request):
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            # Check if a user with the same username or email exists
+            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+                messages.info(
+                    request, 'A user with the same username or email already exists.')
+                return redirect(request.path)
+            else:
+                user = form.save()
+                # Extract first name and last name from the form
+                first_name = form.cleaned_data['first_name']
+                last_name = form.cleaned_data['last_name']
+                email = form.cleaned_data['email']
+                # Update the user's first name, last name, email
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.save()
+                messages.success(
+                    request, f'Account created successfully for {username}')
+                return redirect('/home')
+    else:
+        form = CreateUserForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'accounts/customer_form.html', context)
+
+
+@login_required(login_url='/login')
+@allowed_access(allowed_groups=['admin', 'employee'])
 def customers(request, id):
     customer = Customer.objects.get(id=id)
     orders = customer.order_set.all()
@@ -116,7 +174,7 @@ def customers(request, id):
 
 
 @login_required(login_url='/login')
-@allowed_access(allowed_groups=['admin','employee'])
+@allowed_access(allowed_groups=['admin', 'employee'])
 def createOrder(request, id):
     # inline formsets allow to enter multiple fields without first submitting
     # Takes in the Parent model, child model and the fields to take from child model
@@ -144,7 +202,7 @@ def createOrder(request, id):
 
 
 @login_required(login_url='/login')
-@allowed_access(allowed_groups=['admin','employee'])
+@allowed_access(allowed_groups=['admin', 'employee'])
 def updateOrder(request, id):
     order = Order.objects.get(id=id)
     if request.method == 'POST':
@@ -170,6 +228,7 @@ def deleteOrder(request, id):
     context = {'order': order}
     return render(request, 'accounts/delete.html', context)
 
+
 @login_required(login_url='login')
 @allowed_access(allowed_groups=['customer'])
 def user(request):
@@ -179,27 +238,28 @@ def user(request):
     orders_pending = orders.filter(status='Pending').count()
 
     context = {
-        'orders':orders,
-        'total_orders':total_orders,
+        'orders': orders,
+        'total_orders': total_orders,
         'orders_delivered': orders_delivered,
         'orders_pending': orders_pending
     }
     return render(request, 'accounts/user.html', context)
 
+
 @login_required(login_url='login')
-@allowed_access(allowed_groups=['customer','admin'])
+@allowed_access(allowed_groups=['customer', 'admin'])
 def user_settings(request):
     customer = request.user.customer
     if request.method == "POST":
-        form = CustomerForm(request.POST, request.FILES, instance = customer)
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updates successfully')
             return redirect(request.path)
     else:
-        form = CustomerForm(instance = customer)
-    context = { 
-        'form':form
+        form = CustomerForm(instance=customer)
+    context = {
+        'form': form
     }
     return render(request, 'accounts/profile_settings.html', context)
 
