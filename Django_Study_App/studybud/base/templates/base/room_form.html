@@ -1,0 +1,12 @@
+{% extends 'base/base.html'%}
+{% block title %} Room {% endblock title%}
+{% load crispy_forms_tags%}
+{% block content%}
+<div class="div">
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock content%}
