@@ -1,19 +1,60 @@
 {% extends 'base/base.html' %} {% block title %} Home {% endblock %}
 {% block content %}
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+    }
+</style>
 <h1>Home Template</h1>
-<div class="div">
-    <a href="{% url 'create-room' %}">Create Room</a>
+<div class="home-container">
     <div>
-        {% for room in rooms %}
-        <div class="div">
-            <a href="{% url 'update-room' room.id %}" class="btn btn-sm btn-outline-warning mr-2">Edit Room</a>
-            <a href="{% url 'delete-room' room.id %}" class="btn btn-sm btn-outline-danger">Delete Room</a>
+        <h3>Browse Topics</h3>
+        <hr>
+        <a href="{% url 'home' %}"> All </a>
+        {% for topic in topics %}
+        <div>
+            <a href="{% url 'home' %}?q={{topic.name}}">{{ topic.name }}</a>
         </div>
-        <p>@ {{ room.host.username }}</p>
-        <p>{{ room.id }} <a href="{% url 'room' room.id %}"> {{ room.name }}</a></p>
-        <small>{{ room.topic.name }}</small>
-        <hr />
         {% endfor %}
     </div>
+
+    <div>
+        <h5>{{ room_count }} rooms available</h5>
+        <a href="{% url 'create-room' %}">Create Room</a>
+        <div>
+            {% for room in rooms %}
+            <div class="div">
+                {% if request.user == room.host %}
+                <a href="{% url 'update-room' room.id %}" class="btn btn-sm btn-outline-warning mr-2">Edit Room</a>
+                <a href="{% url 'delete-room' room.id %}" class="btn btn-sm btn-outline-danger">Delete Room</a>
+                {% endif %}
+            </div>
+            <p>@ {{ room.host.username }}</p>
+            <p>{{ room.id }} <a href="{% url 'room' room.id %}"> {{ room.name }}</a></p>
+            <small>{{ room.topic.name }}</small>
+            <hr />
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <h3>Recently activity</h3>
+        <hr>
+        {% for message in room_messages %}
+        <div>
+            <small>@{{ message.user }} | {{ message.created | timesince }} ago </small><br>
+            <small>Replied to "{{ message.room }}"</small>
+            <p>{{ message }}</p>
+            {% if request.user == message.user %}
+            <a href="{% url 'delete-message' message.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            {% endif %}
+            <hr>
+        </div>
+        {% endfor %}
+
+    </div>
+
 </div>
+
 {% endblock %}
